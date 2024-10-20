@@ -74,6 +74,7 @@ class _HomeMoileState extends State<HomeMoile> {
                                   MyTextt(text: "price ",fontSize: 20,fontWeight: FontWeight.w400,),
                                   MyTextt(text: "country ",fontSize: 20,fontWeight: FontWeight.w400,),
                                     MyTextt(text: "city ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                    MyTextt(text: "Donation ",fontSize: 20,fontWeight: FontWeight.w400,),
                                 ],
                               ),
                               Column(
@@ -85,6 +86,7 @@ class _HomeMoileState extends State<HomeMoile> {
                                   MyTextt(text: " Rs 560 ",fontSize: 20,fontWeight: FontWeight.w400,),
                                   MyTextt(text: " Pakistan ",fontSize: 20,fontWeight: FontWeight.w400,),
                                   MyTextt(text: " karachi ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: "Not ",fontSize: 20,fontWeight: FontWeight.w400,),
                                 ],
                               )
                             ],

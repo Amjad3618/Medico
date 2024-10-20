@@ -19,7 +19,7 @@ class _BottomNavMobileState extends State<BottomNavMobile> {
 
     const HomeMoile(),
     const OrdersMobile(),
-    const AddPMobile(),
+    const AddMedicineMobile(),
     const ProfileMobile(),
     
   ];

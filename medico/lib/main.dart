@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:medico/MobileScreen/add_p_mobile.dart';
 import 'package:medico/MobileScreen/bottom_nav_mobile.dart';
 import 'package:medico/MobileScreen/login_m.dart';
 import 'package:medico/Responsives/lauout_code.dart';
@@ -24,8 +23,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         // home: const BottomNavMobile());
-        home: AddPMobile());
-        // home: const LayoutCode(
-        //     mobilescreen: LoginM(), websitescreen:  LoginW()));
+        // home: HomeWeb());
+        home: const LayoutCode(
+            mobilescreen: LoginM(), websitescreen:  LoginW()));
  }
 }
