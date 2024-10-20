@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medico/MobileScreen/add_p_mobile.dart';
 import 'package:medico/MobileScreen/home_moile.dart';
 import 'package:medico/MobileScreen/profile_mobile.dart';
-import 'package:medico/MobileScreen/serach_mobile.dart';
+import 'package:medico/MobileScreen/orders_mobile.dart';
 
 class BottomNavMobile extends StatefulWidget {
   const BottomNavMobile({super.key});
@@ -18,7 +18,7 @@ class _BottomNavMobileState extends State<BottomNavMobile> {
   final List<Widget> _screens = [
 
     const HomeMoile(),
-    const SerachMobile(),
+    const OrdersMobile(),
     const AddPMobile(),
     const ProfileMobile(),
     
@@ -47,8 +47,8 @@ class _BottomNavMobileState extends State<BottomNavMobile> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.person_search),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),

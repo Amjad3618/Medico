@@ -21,6 +21,9 @@ class _HomeMoileState extends State<HomeMoile> {
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
+          actions: [
+            IconButton(onPressed: (){}, icon: const Icon(Icons.person_3_outlined))
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -28,8 +31,8 @@ class _HomeMoileState extends State<HomeMoile> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
                   child: CustomTextFormField(
                     controller: _seaarchctrl,
                     hintText: "Search...",
@@ -42,35 +45,46 @@ class _HomeMoileState extends State<HomeMoile> {
                   return Container(
                     margin: const EdgeInsets.all(10),
                     width: MediaQuery.of(context).size.width * 0.7,
-                    height: MediaQuery.of(context).size.height * 0.5,
-                    decoration: BoxDecoration(color: Colors.blue[100]),
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    decoration: BoxDecoration(color: Colors.blue[50]),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
+                          SizedBox(
                             height: 200,
                             width: double.infinity,
-                            color: Colors.red,
+                         
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.asset("assets/me2.jfif",fit: BoxFit.cover,)),
                           ),
                           const SizedBox(height: 10,)
 ,                          const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  MyTextt(text: "seller name "),
-                                  MyTextt(text: "product name "),
-                                  MyTextt(text: "price "),
+                                  MyTextt(text: "seller name ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: "product name ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: "price ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: "country ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                    MyTextt(text: "city ",fontSize: 20,fontWeight: FontWeight.w400,),
                                 ],
                               ),
                               Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  MyTextt(text: "Amjad Ali "),
-                                  MyTextt(text: "my product "),
-                                  MyTextt(text: " Rs 560 "),
+                                  MyTextt(text: "Amjad Ali ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: "my product ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: " Rs 560 ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: " Pakistan ",fontSize: 20,fontWeight: FontWeight.w400,),
+                                  MyTextt(text: " karachi ",fontSize: 20,fontWeight: FontWeight.w400,),
                                 ],
                               )
                             ],

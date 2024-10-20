@@ -21,7 +21,7 @@ class _SingUpMState extends State<SingUpM> {
     return Scaffold(
       body: Center(
         child: Container(
-          height: screenSize.height * 0.8, // 80% of screen height
+          height: screenSize.height * 10, // 80% of screen height
           width: screenSize.width * 0.9, // 90% of screen width
           decoration: BoxDecoration(
             color: Colors.grey[300],
@@ -44,6 +44,12 @@ class _SingUpMState extends State<SingUpM> {
                 fontSize: 20,
                 fontWeight: FontWeight.w400,
                 textAlign: TextAlign.center, // Center text
+              ),
+              const SizedBox(height: 10,),
+              const CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.orange,
+                child: Icon(Icons.person_add_alt),
               ),
               const SizedBox(height: 15),
               // Using a single container to handle padding and spacing
