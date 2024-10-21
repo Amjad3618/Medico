@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medico/WebScreens/add_medicines_web.dart';
 import 'package:medico/WebScreens/home_web_screen.dart';
+import 'package:medico/WebScreens/order_web.dart';
 import 'package:medico/WebScreens/profile_web.dart';
 import 'package:medico/utils/custom_text.dart';
 import 'package:medico/utils/my_list_tile.dart';
@@ -17,9 +18,11 @@ class _DeviderHomeState extends State<DeviderHome> {
 
   // List of screens/content to show when different menu items are selected
   final List<Widget> _screens = [
-   const HomeWebScreen(),
-    const AddMedicinesWeb(),
+   const HomeWeb(),
+    const AddMedicineWeb(),
     const ProfileWeb(),
+    const OrderReceivingPageWeb()
+    
   ];
 
   // Method to handle ListTile taps and change the screen
@@ -86,6 +89,14 @@ class _DeviderHomeState extends State<DeviderHome> {
                   icon: Icons.person,
                   onTap: () {
                     _onMenuItemSelected(2); // Navigate to Profile screen
+                  },
+                ),
+                 const SizedBox(height: 15),
+                MyListTile(
+                  title: "Orders",
+                  icon: Icons.shopping_bag,
+                  onTap: () {
+                    _onMenuItemSelected(3); // Navigate to Profile screen
                   },
                 ),
                  Padding(

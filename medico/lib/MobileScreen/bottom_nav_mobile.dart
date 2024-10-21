@@ -18,7 +18,7 @@ class _BottomNavMobileState extends State<BottomNavMobile> {
   final List<Widget> _screens = [
 
     const HomeMoile(),
-    const OrdersMobile(),
+    const OrderReceivingPageMobile(),
     const AddMedicineMobile(),
     const ProfileMobile(),
     
@@ -47,11 +47,11 @@ class _BottomNavMobileState extends State<BottomNavMobile> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_search),
+            icon: Icon(Icons.production_quantity_limits),
             label: 'Orders',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_box),
+            icon: Icon(Icons.pool_rounded),
             label: 'Add',
           ),
           BottomNavigationBarItem(
