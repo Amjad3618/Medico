@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:medico/utils/custom_text.dart';
 import '../utils/custome-button.dart';
-
 import '../utils/custome_form.dart';
 
 class AddMedicineWeb extends StatefulWidget {
@@ -19,6 +17,22 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
   final _descriptionController = TextEditingController();
   final _countryController = TextEditingController();
   final _cityController = TextEditingController();
+
+  // List of Pakistani cities
+  final List<String> _cities = [
+    "Karachi",
+    "Lahore",
+    "Islamabad",
+    "Rawalpindi",
+    "Faisalabad",
+    "Multan",
+    "Peshawar",
+    "Quetta",
+    "Sialkot",
+    "Hyderabad"
+  ];
+
+  String? _selectedCity; // Variable to store the selected city
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +69,7 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                         hintText: "Medicine Name",
                       ),
                       const SizedBox(height: 20),
-                  
+
                       // Price and Donation Switch
                       Row(
                         children: [
@@ -80,21 +94,36 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                  
+
                       // Country
                       CustomTextFormField(
                         controller: _countryController,
                         hintText: "Country",
                       ),
                       const SizedBox(height: 20),
-                  
-                      // City
-                      CustomTextFormField(
-                        controller: _cityController,
-                        hintText: "City",
+
+                      // City Dropdown
+                      DropdownButtonFormField<String>(
+                        value: _selectedCity,
+                        hint: const Text("Select City"),
+                        items: _cities.map((String city) {
+                          return DropdownMenuItem<String>(
+                            value: city,
+                            child: Text(city),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedCity = newValue;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                        ),
                       ),
                       const SizedBox(height: 20),
-                  
+
                       // Description
                       TextFormField(
                         maxLines: 4,
@@ -106,7 +135,7 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                  
+
                       // Image Picker
                       Container(
                         height: 200,
@@ -124,7 +153,7 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                  
+
                       // Add Medicine Button
                       Center(
                         child: MyElevatedButton(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:medico/MobileScreen/add_p_mobile.dart';
+import 'package:medico/MobileScreen/add_madecines_mobile.dart';
 import 'package:medico/MobileScreen/home_moile.dart';
 import 'package:medico/MobileScreen/profile_mobile.dart';
 import 'package:medico/MobileScreen/orders_mobile.dart';

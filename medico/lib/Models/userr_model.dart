@@ -1,32 +1,35 @@
 class UserrModel {
-  String? profilepic;
   String? name;
   String? email;
   String? password;
   String? userUid;
+  String? imageUrl;
 
-  // Constructor
-  UserrModel(
-      {this.name, this.email, this.password, this.userUid, this.profilepic});
+  UserrModel({
+    this.name,
+    this.email,
+    this.password,
+    this.userUid,
+    this.imageUrl,
+  });
 
-  // fromJson factory method
   factory UserrModel.fromJson(Map<String, dynamic> json) {
     return UserrModel(
-        name: json['name'],
-        email: json['email'],
-        password: json['password'],
-        userUid: json['userUid'],
-        profilepic: json["profilepic"]);
+      name: json['name'],
+      email: json['email'],
+      password: json['password'],
+      userUid: json['userUid'],
+      imageUrl: json['imageUrl'],
+    );
   }
 
-  // toJson method
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'email': email,
       'password': password,
       'userUid': userUid,
-      "profilepic": profilepic
+      'imageUrl': imageUrl,
     };
   }
 }

@@ -1,11 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:medico/MobileScreen/bottom_nav_mobile.dart';
+
 import 'package:medico/MobileScreen/login_m.dart';
 import 'package:medico/Responsives/lauout_code.dart';
-import 'package:medico/WebScreens/devider_home.dart';
-import 'package:medico/WebScreens/login_w.dart';
 
-void main() {
+import 'package:medico/WebScreens/login_w.dart';
+import 'package:medico/utils/uiHelper.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyB9lM1XebxHtrcZQYvZRHfF1aSFsCj0ISk",
+          authDomain: "medico-533fd.firebaseapp.com",
+          projectId: "medico-533fd",
+          storageBucket: "medico-533fd.appspot.com",
+          messagingSenderId: "479462515526",
+          appId: "1:479462515526:web:530e58739f8f92d5c37b47"));
   runApp(const MyApp());
 }
 
@@ -15,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: false,
         title: 'Medico',
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.grey[100],
@@ -24,7 +35,7 @@ class MyApp extends StatelessWidget {
         ),
         // home: const BottomNavMobile());
         // home: HomeWeb());
-        home: const LayoutCode(
-            mobilescreen: LoginM(), websitescreen:  LoginW()));
- }
+        home:
+           const UIHelper());
+  }
 }
