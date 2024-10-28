@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart'; // Needed for kIsWeb
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:medico/utils/custome-button.dart';
 
-import '../Models/userr_model.dart';
+import '../data/firebase_auth_services.dart';
 
 
 class SignUpW extends StatefulWidget {
@@ -22,6 +20,9 @@ class _SignUpWState extends State<SignUpW> {
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   XFile? _pickedImageFile;
+  
+  // Create an instance of FirebaseAuthService
+  final FirebaseAuthService _authService = FirebaseAuthService();
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -36,40 +37,15 @@ class _SignUpWState extends State<SignUpW> {
 
   Future<void> _signUpUser() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: _emailController.text,
-              password: _passwordController.text);
-
-      String imageUrl = '';
-      if (_pickedImageFile != null) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('user_images/${userCredential.user!.uid}');
-        
-        if (kIsWeb) {
-          // Use `putData` for web compatibility
-          await storageRef.putData(await _pickedImageFile!.readAsBytes());
-        } else {
-          // Use `putFile` for mobile
-          await storageRef.putFile(File(_pickedImageFile!.path));
-        }
-
-        imageUrl = await storageRef.getDownloadURL();
-      }
-
-      final user = UserrModel(
-        name: _nameController.text,
+      // Call the complete sign-up process from FirebaseAuthService
+      await _authService.completeSignUpProcess(
         email: _emailController.text,
-        userUid: userCredential.user!.uid,
-        imageUrl: imageUrl,
+        password: _passwordController.text,
+        name: _nameController.text,
+        profileImage: _pickedImageFile,
       );
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set(user.toJson());
-
+      // Navigate back after successful sign-up
       Navigator.pop(context);
 
       print('User created successfully!');
@@ -186,13 +162,13 @@ class _SignUpWState extends State<SignUpW> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
+                    MyElevatedButton(
+                      text: 'SignUp',
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _signUpUser();
                         }
                       },
-                      child: const Text('SignUp'),
                     ),
                   ],
                 ),
