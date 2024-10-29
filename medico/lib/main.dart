@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
         ),
         // home: const BottomNavMobile());
         // home: HomeWeb());
-        home:
-           const UIHelper());
+        home: const UIHelper());
   }
 }

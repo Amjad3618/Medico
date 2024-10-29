@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ProductDetailWeb extends StatefulWidget {
-  const ProductDetailWeb({super.key});
+  const ProductDetailWeb({super.key, required String productId, required Map<String, dynamic> productData});
 
   @override
   State<ProductDetailWeb> createState() => _ProductDetailWebState();
