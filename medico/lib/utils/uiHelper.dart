@@ -13,27 +13,28 @@ class UIHelper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        // Check if the user is logged in or not
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Show a loading spinner while waiting for data
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasData && snapshot.data != null) {
-          // Check screen size and return appropriate home screen
-          final screenWidth = MediaQuery.of(context).size.width;
-          return screenWidth > 800 
-              ? const DeviderHome()  // Web view
-              : const BottomNavMobile();  // Mobile view
-        } else {
-          // If user is null, show the login screen depending on the platform
-          return const LayoutCode(
-            mobilescreen: LoginM(),
-            websitescreen: LoginW(),
-          );
-        }
-      },
-    );
-  }
+    return  StreamBuilder<User?>(
+  stream: FirebaseAuth.instance.authStateChanges(),
+  builder: (context, snapshot) {
+    // Add debug prints
+    print('Connection State: ${snapshot.connectionState}');
+    print('Has Data: ${snapshot.hasData}');
+    print('Current User: ${FirebaseAuth.instance.currentUser?.uid}');
+    
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (snapshot.hasData && snapshot.data != null) {
+      final screenWidth = MediaQuery.of(context).size.width;
+      return screenWidth > 800 
+          ? const DeviderHome()
+          : const BottomNavMobile();
+    } else {
+      return const LayoutCode(
+        mobilescreen: LoginM(),
+        websitescreen: LoginW(),
+      );
+    }
+  },
+);
+}
 }

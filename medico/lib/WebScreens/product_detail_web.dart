@@ -1,7 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailWeb extends StatefulWidget {
-  const ProductDetailWeb({super.key, required String productId, required Map<String, dynamic> productData});
+  final String productId;
+  final Map<String, dynamic> productData;
+
+  const ProductDetailWeb({
+    super.key,
+    required this.productId,
+    required this.productData,
+  });
 
   @override
   State<ProductDetailWeb> createState() => _ProductDetailWebState();
@@ -21,14 +30,14 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
   void _showOrderBottomSheet() {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // To allow full screen height
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // Adjust for keyboard
+            bottom: MediaQuery.of(context).viewInsets.bottom,
             top: 20,
             left: 20,
             right: 20,
@@ -36,7 +45,7 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Wraps content height
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
                   'Order Product',
@@ -113,9 +122,10 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
 
                 // Submit Button
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
                       // Process the order with user input data
+                      await _submitOrder();
                       Navigator.pop(context); // Close the bottom sheet
                     }
                   },
@@ -130,12 +140,48 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
     );
   }
 
+  // Function to submit the order to Firestore
+  Future<void> _submitOrder() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      // Handle user not logged in case if needed
+      return;
+    }
+
+    // Create an order data map
+    final orderData = {
+      'productId': widget.productId,
+      'userId': user.uid,
+      'name': _nameController.text,
+      'email': _emailController.text,
+      'address': _addressController.text,
+      'city': _cityController.text,
+      'phone': _phoneNumberController.text,
+      'timestamp': FieldValue.serverTimestamp(), // Optional: Add timestamp
+    };
+
+    try {
+      // Add order data to Firestore in the 'orders' collection
+      await FirebaseFirestore.instance.collection('orders').add(orderData);
+      // Optionally, you can show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Order placed successfully!')),
+      );
+    } catch (e) {
+      // Handle any errors here
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error placing order: $e')),
+      );
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("My Product"),
+        title: const Text("Product Details"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -150,8 +196,8 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/me2.jfif"),
+                    image: DecorationImage(
+                      image: NetworkImage(widget.productData['productImage'] ?? ""),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -160,29 +206,29 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
               const SizedBox(height: 20),
 
               // Product Details
-              const ProductInfoRow(
+              ProductInfoRow(
                 label: "Seller Name:",
-                value: "Amjad Ali",
+                value: widget.productData['sellerName'] ?? "N/A",
               ),
-              const ProductInfoRow(
+              ProductInfoRow(
                 label: "Product Name:",
-                value: "My Product",
+                value: widget.productData['name'] ?? "N/A",
               ),
-              const ProductInfoRow(
+              ProductInfoRow(
                 label: "Price:",
-                value: "Rs 560",
+                value: "Rs ${widget.productData['price'] ?? 'N/A'}",
               ),
-              const ProductInfoRow(
+              ProductInfoRow(
                 label: "Country:",
-                value: "Pakistan",
+                value: widget.productData['country'] ?? "N/A",
               ),
-              const ProductInfoRow(
+              ProductInfoRow(
                 label: "City:",
-                value: "Karachi",
+                value: widget.productData['city'] ?? "N/A",
               ),
-              const ProductInfoRow(
+              ProductInfoRow(
                 label: "Donation:",
-                value: "Not Applicable",
+                value: widget.productData['donation'] ?? "Not Applicable",
               ),
 
               const SizedBox(height: 20),
@@ -198,23 +244,25 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
               const SizedBox(height: 10),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
-                child: const Text(
-                  "This is a detailed description of the product. It contains all the features, specifications, and other relevant details that a buyer might want to know before purchasing.",
-                  style: TextStyle(fontSize: 16, height: 1.5),
+                child: Text(
+                  widget.productData['description'] ?? "No description available.",
+                  style: const TextStyle(fontSize: 16, height: 1.5),
                 ),
               ),
               const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _showOrderBottomSheet,
+                    child: const Text("Order"),
+                  ),
+                ],
+              )
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showOrderBottomSheet,
-        child:  Icon(Icons.shopping_cart,color: Colors.white,),
-        tooltip: 'Order Now',
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // Positioning the FAB to the right
     );
   }
 }
@@ -233,26 +281,15 @@ class ProductInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(width: 20),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          children: [
+            TextSpan(text: label, style: const TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: ' $value'),
+          ],
+        ),
       ),
     );
   }

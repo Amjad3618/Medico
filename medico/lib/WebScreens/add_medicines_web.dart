@@ -121,6 +121,7 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
+      print(e);
     } finally {
       setState(() => isLoading = false);
     }
@@ -225,18 +226,6 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                                         validator: (value) {
                                           if (value?.isEmpty ?? true) {
                                             return 'Please enter country';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 20),
-                                      CustomTextFormField(
-                                        controller: _phoneController,
-                                        keyboardType: TextInputType.number,
-                                        hintText: "Phone Number",
-                                        validator: (value) {
-                                          if (value?.isEmpty ?? true) {
-                                            return 'Please enter phone number';
                                           }
                                           return null;
                                         },

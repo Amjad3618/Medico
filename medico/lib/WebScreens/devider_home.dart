@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medico/WebScreens/add_medicines_web.dart';
 import 'package:medico/WebScreens/home_web_screen.dart';
+import 'package:medico/WebScreens/login_w.dart';
 import 'package:medico/WebScreens/order_web.dart';
 import 'package:medico/WebScreens/profile_web.dart';
 import 'package:medico/utils/custom_text.dart';
@@ -14,18 +17,14 @@ class DeviderHome extends StatefulWidget {
 }
 
 class _DeviderHomeState extends State<DeviderHome> {
-  int _selectedIndex = 0; // Track which menu item is selected
-
-  // List of screens/content to show when different menu items are selected
+  int _selectedIndex = 0;
   final List<Widget> _screens = [
-   const HomeWeb(),
+    const HomeWeb(),
     const AddMedicineWeb(),
     const ProfileWeb(),
-    const OrderReceivingPageWeb()
-    
+    const OrderRecevingPageWeb()
   ];
 
-  // Method to handle ListTile taps and change the screen
   void _onMenuItemSelected(int index) {
     setState(() {
       _selectedIndex = index;
@@ -34,82 +33,116 @@ class _DeviderHomeState extends State<DeviderHome> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       body: Row(
         children: [
-          // Drawer on the left side
           Drawer(
             backgroundColor: Colors.white,
             child: ListView(
-              padding: EdgeInsets.zero, // Remove default padding
+              padding: EdgeInsets.zero,
               children: [
-                 DrawerHeader(
-                 
-                  
+                DrawerHeader(
                   decoration: const BoxDecoration(),
-                  child:Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(color: Colors.grey[200],borderRadius: BorderRadius.circular(
-                      10
-                    )),
-                    child:  const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                      CircleAvatar(
-                        radius: 30,
-                      ),
-                      SizedBox(height: 5,),
-                      MyTextt(text: "Amjad Ali",fontSize: 15,),
-                       SizedBox(height: 5,),
-                      MyTextt(text: "amjad@gmail.com",fontSize: 12,),
-                     
-                    ],),
-                  )
+                  child: FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user?.uid)
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return const Center(child: Text('Error loading user data'));
+                      }
+                      if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return const Center(child: Text('User not found'));
+                      }
+
+                      final userData = snapshot.data!.data() as Map<String, dynamic>;
+                      final imageUrl = userData['imageUrl'] ?? '';
+                      final userName = userData['name'] ?? 'User';
+                      final userEmail = userData['email'] ?? 'Email';
+
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundImage: imageUrl.isNotEmpty
+                                ? NetworkImage(imageUrl)
+                                : null,
+                            child: imageUrl.isEmpty
+                                ? const Icon(Icons.person)
+                                : null,
+                          ),
+                          const SizedBox(height: 5),
+                          MyTextt(
+                            text: userName,
+                            fontSize: 15,
+                          ),
+                          const SizedBox(height: 5),
+                          MyTextt(
+                            text: userEmail,
+                            fontSize: 12,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
                 MyListTile(
                   title: "Home",
-                  icon: Icons.home,
+             imageIcon: "assets/house.png",
                   onTap: () {
-                    _onMenuItemSelected(0); // Navigate to Home screen
+                    _onMenuItemSelected(0);
                   },
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Add Medicines",
-                  icon: Icons.add,
+                imageIcon: "assets/add-to-cart.png",
                   onTap: () {
-                    _onMenuItemSelected(1); // Navigate to Add Medicines screen
+                    _onMenuItemSelected(1);
                   },
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Profile",
-                  icon: Icons.person,
-                  onTap: () {
-                    _onMenuItemSelected(2); // Navigate to Profile screen
+             
+             imageIcon: "assets/user.png",     onTap: () {
+                    _onMenuItemSelected(2);
                   },
                 ),
-                 const SizedBox(height: 15),
+                const SizedBox(height: 15),
                 MyListTile(
                   title: "Orders",
-                  icon: Icons.shopping_bag,
+                imageIcon: "assets/delivery-man.png",
                   onTap: () {
-                    _onMenuItemSelected(3); // Navigate to Profile screen
+                    _onMenuItemSelected(3);
                   },
                 ),
-                 Padding(
-                        padding: const EdgeInsets.only(top: 200),
-                        child: MyListTile(title: "LogOut", icon: Icons.logout, onTap: (){}),
-                      )
+                Padding(
+                  padding: const EdgeInsets.only(top: 200),
+                  child: MyListTile(
+                    title: "LogOut",
+              imageIcon:"assets/check-out.png" ,
+                    onTap: () {
+                      final auth = FirebaseAuth.instance;
+                      auth.signOut();
+                      Navigator.pushReplacement(
+                          context, MaterialPageRoute(builder: (_) => LoginW()));
+                    },
+                  ),
+                )
               ],
             ),
           ),
-
-          // Expanded widget to take the remaining space on the right for the screen content
           Expanded(
-            child: _screens[_selectedIndex], // Display the selected screen
+            child: _screens[_selectedIndex],
           ),
         ],
       ),
