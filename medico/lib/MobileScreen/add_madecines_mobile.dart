@@ -1,12 +1,13 @@
+// ignore_for_file: use_build_context_synchronously, prefer_conditional_assignment
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';  // For web images
+import 'dart:typed_data';
 import '../Models/produ_model.dart';
 import '../utils/custom_text.dart';
-import '../utils/custome-button.dart';
 import '../utils/custome_form.dart';
 
 class AddMedicineMobile extends StatefulWidget {
@@ -19,20 +20,28 @@ class AddMedicineMobile extends StatefulWidget {
 class _AddMedicineMobileState extends State<AddMedicineMobile> {
   bool isDonation = false;
   bool isLoading = false;
-  Uint8List? _webImageFile;  // For web image data
-  String? _imageUrl;  // Store the URL of the uploaded image
-  final _formKey = GlobalKey<FormState>();
+  Uint8List? _imageFile;
+  String? _imageUrl;
 
+  final _formKey = GlobalKey<FormState>();
   final _medicineNameController = TextEditingController();
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _countryController = TextEditingController();
   final _phoneController = TextEditingController();
+    final _sellernameController = TextEditingController();
 
   final List<String> _cities = [
-    "Karachi", "Lahore", "Islamabad", "Rawalpindi", 
-    "Faisalabad", "Multan", "Peshawar", "Quetta", 
-    "Sialkot", "Hyderabad"
+    "Karachi",
+    "Lahore",
+    "Islamabad",
+    "Rawalpindi",
+    "Faisalabad",
+    "Multan",
+    "Peshawar",
+    "Quetta",
+    "Sialkot",
+    "Hyderabad"
   ];
 
   String? _selectedCity;
@@ -43,19 +52,12 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
       if (image != null) {
-        if (kIsWeb) {
-          final imageData = await image.readAsBytes();
-          setState(() {
-            _webImageFile = imageData;
-          });
-          _imageUrl = await _uploadImageWeb();
-        } else {
-          // Handle non-web platforms
-          final imageData = await image.readAsBytes();
-          _webImageFile = imageData;
-          _imageUrl = await _uploadImageWeb();
-        }
-        setState(() {});  // Refresh to display uploaded image
+        final imageData = await image.readAsBytes();
+        setState(() {
+          _imageFile = imageData;
+        });
+        _imageUrl = await _uploadImage();
+        setState(() {});
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,8 +66,8 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
     }
   }
 
-  Future<String?> _uploadImageWeb() async {
-    if (_webImageFile == null) return null;
+  Future<String?> _uploadImage() async {
+    if (_imageFile == null) return null;
 
     try {
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -74,7 +76,7 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
           .child('medicine_images')
           .child('$fileName.jpg');
 
-      final UploadTask uploadTask = storageRef.putData(_webImageFile!);
+      final UploadTask uploadTask = storageRef.putData(_imageFile!);
       final TaskSnapshot snapshot = await uploadTask;
       final String downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
@@ -85,41 +87,61 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
       return null;
     }
   }
+Future<void> _saveMedicineData() async {
+  if (!_formKey.currentState!.validate()) return;
 
-  Future<void> _saveMedicineData() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => isLoading = true);
-
-    try {
-      final product = ProductModel(
-        name: _medicineNameController.text,
-        price: isDonation ? "0" : _priceController.text,
-        sellerName: _phoneController.text,
-        description: _descriptionController.text,
-        city: _selectedCity,
-        isDonated: isDonation,
-        productImage: _imageUrl,  // Use the uploaded image URL
-        country: _countryController.text,
-      );
-
-      await FirebaseFirestore.instance
-          .collection('medicines')
-          .add(product.toJson());
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Medicine added successfully!')),
-      );
-
-      _clearForm();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-    } finally {
-      setState(() => isLoading = false);
-    }
+  // Ensure an image is selected and uploaded before proceeding
+  if (_imageFile == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please select an image')),
+    );
+    return;
   }
+
+  setState(() => isLoading = true);
+
+  try {
+    // Wait for _imageUrl to be populated
+    if (_imageUrl == null) {
+      _imageUrl = await _uploadImage();
+    }
+
+    if (_imageUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Image upload failed')),
+      );
+      return;
+    }
+
+    // Create product model with valid image URL
+    final product = ProductModel(
+      name: _medicineNameController.text,
+      price: isDonation ? "0" : _priceController.text,
+      sellerName: _sellernameController.text,
+      description: _descriptionController.text,
+      city: _selectedCity,
+      isDonated: isDonation,
+      productImage: _imageUrl, // Use the non-null URL here
+      country: _countryController.text,
+    );
+
+    await FirebaseFirestore.instance
+        .collection('medicines')
+        .add(product.toJson());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Medicine added successfully!')),
+    );
+
+    _clearForm();
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: ${e.toString()}')),
+    );
+  } finally {
+    setState(() => isLoading = false);
+  }
+}
 
   void _clearForm() {
     _medicineNameController.clear();
@@ -129,8 +151,8 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
     _phoneController.clear();
     setState(() {
       _selectedCity = null;
-      _webImageFile = null;
-      _imageUrl = null;  // Clear the image URL
+      _imageFile = null;
+      _imageUrl = null;
       isDonation = false;
     });
   }
@@ -139,21 +161,20 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const MyTextt(text: "Add Medicine"),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CustomTextFormField(
                   controller: _medicineNameController,
-                  hintText: "Medicine name",
+                  hintText: "Medicine Name",
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
                       return 'Please enter medicine name';
@@ -161,41 +182,36 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 16),
+                if (!isDonation) ...[
+                  CustomTextFormField(
+                    controller: _priceController,
+                    hintText: "Price",
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (!isDonation && (value?.isEmpty ?? true)) {
+                        return 'Please enter price';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 Row(
                   children: [
-                    if (!isDonation) ...[
-                      Expanded(
-                        child: CustomTextFormField(
-                          controller: _priceController,
-                          hintText: "Price",
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (!isDonation && (value?.isEmpty ?? true)) {
-                              return 'Please enter price';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                    const MyTextt(text: "I am donating"),
-                    const SizedBox(width: 5),
+                    const Text("Donation?"),
                     Switch(
                       value: isDonation,
                       onChanged: (value) {
                         setState(() {
                           isDonation = value;
-                          if (isDonation) {
-                            _priceController.clear();
-                          }
+                          if (isDonation) _priceController.clear();
                         });
                       },
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 16),
                 CustomTextFormField(
                   controller: _countryController,
                   hintText: "Country",
@@ -206,7 +222,7 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 16),
                 CustomTextFormField(
                   controller: _phoneController,
                   hintText: "Phone Number",
@@ -218,7 +234,7 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _selectedCity,
                   hint: const Text("Select City"),
@@ -241,10 +257,13 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                   },
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 15,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 16),
                 TextFormField(
                   maxLines: 4,
                   maxLength: 200,
@@ -260,38 +279,36 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 15),
-                Container(
-                  height: 200,
-                  width: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: _webImageFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: kIsWeb && _imageUrl != null
-                              ? Image.network(
-                                  _imageUrl!,
-                                  fit: BoxFit.cover,
-                                )
-                              : const Center(child: CircularProgressIndicator()),
-                        )
-                      : Center(
-                          child: IconButton(
-                            onPressed: _pickImage,
-                            icon: const Icon(Icons.camera_alt_outlined, size: 30),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: _imageFile != null
+                        ? Image.memory(_imageFile!, fit: BoxFit.cover)
+                        : const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.camera_alt, size: 40),
+                                Text("Tap to add image"),
+                              ],
+                            ),
                           ),
-                        ),
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: MyElevatedButton(
-                    text: isLoading ? "Saving..." : "Save",
-                    onPressed: (){isLoading ? null : _saveMedicineData();}
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange,textStyle: const TextStyle(color: Colors.white,fontSize: 20),),
+                  onPressed: isLoading ? null : _saveMedicineData,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(isLoading ? 'Saving...' : 'Save Medicine'),
                   ),
                 ),
               ],

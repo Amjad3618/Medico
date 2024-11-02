@@ -254,6 +254,7 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.orange,),
                     onPressed: _showOrderBottomSheet,
                     child: const Text("Order"),
                   ),

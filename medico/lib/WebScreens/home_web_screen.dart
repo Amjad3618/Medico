@@ -150,43 +150,37 @@ class _HomeWebState extends State<HomeWeb> {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
+                              
                                 Text(
-                                  "Seller Name: ${medicineData['sellerName'] ?? 'N/A'}",
+                                  "Product Name:   ${medicineData['name'] ?? 'N/A'}",
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  "Product Name: ${medicineData['price'] ?? 'N/A'}",
+                                  "Price:   Rs ${medicineData['price'] ?? 'N/A'}",
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  "Price: Rs ${medicineData['price'] ?? 'N/A'}",
+                                  "Country:   ${medicineData['country'] ?? 'N/A'}",
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  "Country: ${medicineData['country'] ?? 'N/A'}",
+                                  "City:   ${medicineData['city'] ?? 'N/A'}",
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  "City: ${medicineData['city'] ?? 'N/A'}",
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  "Donation: ${medicineData['donation'] ?? 'Not Applicable'}",
+                                  "Donation:   ${medicineData['donation'] ?? 'Not Applicable'}",
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),

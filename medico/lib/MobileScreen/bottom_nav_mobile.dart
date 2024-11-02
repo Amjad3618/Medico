@@ -16,12 +16,10 @@ class _BottomNavMobileState extends State<BottomNavMobile> {
 
   // List of widgets corresponding to each tab
   final List<Widget> _screens = [
-
-    const HomeMoile(),
+    const HomeMobile(),
     const OrderReceivingPageMobile(),
     const AddMedicineMobile(),
     const ProfileMobile(),
-    
   ];
 
   // Method to handle bottom navigation tap
@@ -34,33 +32,42 @@ class _BottomNavMobileState extends State<BottomNavMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: _screens[_selectedIndex], // Display the selected screen
 
-      // Bottom Navigation Bar
+      // Bottom Navigation Bar with Images instead of Icons
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex, // Set the currently selected tab
         onTap: _onItemTapped, // Handle tap on a tab
-        items: const <BottomNavigationBarItem>[
+        type: BottomNavigationBarType.fixed, // Keep the bar size fixed
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: _selectedIndex == 0 
+                ? Image.asset('assets/house.png', height: 24) // Show selected image
+                : Image.asset('assets/house.png', height: 24), // Show unselected image
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.production_quantity_limits),
+            icon: _selectedIndex == 1 
+                ? Image.asset('assets/delivery-man.png', height: 24) 
+                : Image.asset('assets/delivery-man.png', height: 24),
             label: 'Orders',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.pool_rounded),
+            icon: _selectedIndex == 2 
+                ? Image.asset('assets/add-to-cart.png', height: 24) 
+                : Image.asset('assets/add-to-cart.png', height: 24),
             label: 'Add',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: _selectedIndex == 3 
+                ? Image.asset('assets/user.png', height: 24) 
+                : Image.asset('assets/user.png', height: 24),
             label: 'Profile',
           ),
         ],
-        selectedItemColor: Colors.blue, // Color of selected tab
-        unselectedItemColor: Colors.grey, // Color of unselected tabs
+        // Remove selected/unselected color to keep original image colors
+        selectedItemColor: null,
+        unselectedItemColor: null,
       ),
     );
   }
