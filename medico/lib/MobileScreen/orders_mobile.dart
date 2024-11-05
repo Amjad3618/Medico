@@ -1,128 +1,215 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class OrderReceivingPageMobile extends StatelessWidget {
-  const OrderReceivingPageMobile({super.key});
+class OrderReceivingPageMobile extends StatefulWidget {
+  const OrderReceivingPageMobile({Key? key}) : super(key: key);
+
+  @override
+  _OrderReceivingPageMobileState createState() => _OrderReceivingPageMobileState();
+}
+
+class _OrderReceivingPageMobileState extends State<OrderReceivingPageMobile> {
+  Future<void> _cancelOrder(String orderId) async {
+    try {
+      await FirebaseFirestore.instance.collection('orders').doc(orderId).delete();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Order cancelled successfully')),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to cancel order: $error')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showDeleteConfirmationDialog(String orderId, String productName) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirm Cancel'),
+          content: Text('Are you sure you want to cancel the order for "$productName"?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Yes', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirm == true) {
+      await _cancelOrder(orderId);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Order Details"),
-        automaticallyImplyLeading: false,
+        title: const Text('Your Orders'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product Image
-            Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage("assets/me2.jfif"),
-                  fit: BoxFit.cover,
-                ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('orders')
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.shopping_cart_outlined, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text(
+                    'No orders placed yet.',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 20),
+            );
+          }
 
-            // Product Information
-            const Text(
-              "Product Information",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "Product Name: Stylish Chair",
-              style: TextStyle(fontSize: 18),
-            ),
-            const Text(
-              "Price: Rs 1200",
-              style: TextStyle(fontSize: 18),
-            ),
-            const Text(
-              "Order Quantity: 1",
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
+          final orders = snapshot.data!.docs;
 
-            // Buyer Information
-            const Text(
-              "Buyer Information",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "Buyer Name: Ali Raza",
-              style: TextStyle(fontSize: 18),
-            ),
-            const Text(
-              "Buyer Email: ali.raza@example.com",
-              style: TextStyle(fontSize: 18),
-            ),
-            const Text(
-              "Shipping Address: 123, Clifton Block 5, Karachi",
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
+          return ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: orders.length,
+            itemBuilder: (context, index) {
+              final orderData = orders[index].data() as Map<String, dynamic>;
+              final orderId = orders[index].id;
+              final timestamp = orderData['timestamp'] as Timestamp?;
+              final formattedDate = timestamp != null 
+                  ? '${timestamp.toDate().day}/${timestamp.toDate().month}/${timestamp.toDate().year}'
+                  : 'N/A';
 
-            // Order Status
-            const Text(
-              "Order Status",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "Order Placed On: 21st October, 2024",
-              style: TextStyle(fontSize: 18),
-            ),
-            const Text(
-              "Order Status: Pending",
-              style: TextStyle(fontSize: 18),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Action Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Approve Order Action
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15),
-                  ),
-                  child: const Text(
-                    "Approve Order",
-                    style: TextStyle(fontSize: 18),
-                  ),
+              return Card(
+                elevation: 3,
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Order header with date and cancel button
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(4),
+                          topRight: Radius.circular(4),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Ordered on: $formattedDate',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => _showDeleteConfirmationDialog(
+                              orderId,
+                              orderData['productName'] ?? 'Unknown Product',
+                            ),
+                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            label: const Text(
+                              'Cancel Order',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Order details
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Product image
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: SizedBox(
+                              width: 100,
+                              height: 100,
+                              child: FutureBuilder<DocumentSnapshot>(
+                                future: FirebaseFirestore.instance
+                                    .collection('products')
+                                    .doc(orderData['productId'])
+                                    .get(),
+                                builder: (context, productSnapshot) {
+                                  if (productSnapshot.hasData && 
+                                      productSnapshot.data != null &&
+                                      productSnapshot.data!.exists) {
+                                    final productData = 
+                                        productSnapshot.data!.data() as Map<String, dynamic>;
+                                    final imageUrl = productData['productImage'] as String?;
+                                    
+                                    if (imageUrl != null && imageUrl.isNotEmpty) {
+                                      return Image.network(
+                                        imageUrl,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            color: Colors.grey[300],
+                                            child: const Icon(Icons.error),
+                                          );
+                                        },
+                                      );
+                                    }
+                                  }
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.image_not_supported),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Order information
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  orderData['productName'] ?? 'Unknown Product',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text('Price: Rs ${orderData['price'] ?? 'N/A'}'),
+                                Text('Name: ${orderData['name'] ?? 'N/A'}'),
+                                Text('Email: ${orderData['email'] ?? 'N/A'}'),
+                                Text('Phone: ${orderData['phone'] ?? 'N/A'}'),
+                                Text('Address: ${orderData['address'] ?? 'N/A'}'),
+                                Text('City: ${orderData['city'] ?? 'N/A'}'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Cancel Order Action
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15),
-                  ),
-                  child: const Text(
-                    "Cancel Order",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-          ],
-        ),
+              );
+            },
+          );
+        },
       ),
     );
   }

@@ -8,6 +8,8 @@ class ProductModel {
   String? productImage;
   String? country;
 
+  var id;
+
   ProductModel({
     this.name,
     this.price,

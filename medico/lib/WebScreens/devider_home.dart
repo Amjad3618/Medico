@@ -21,8 +21,8 @@ class _DeviderHomeState extends State<DeviderHome> {
   final List<Widget> _screens = [
     const HomeWeb(),
     const AddMedicineWeb(),
-    const ProfileWeb(),
-    const OrderRecevingPageWeb()
+     const ProfileScreenweb(),
+     const OrderRecevingPageWeb()
   ];
 
   void _onMenuItemSelected(int index) {
@@ -44,59 +44,62 @@ class _DeviderHomeState extends State<DeviderHome> {
               padding: EdgeInsets.zero,
               children: [
                 DrawerHeader(
-                  decoration: const BoxDecoration(),
-                  child: FutureBuilder<DocumentSnapshot>(
-                    future: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(user?.uid)
-                        .get(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        return const Center(child: Text('Error loading user data'));
-                      }
-                      if (!snapshot.hasData || !snapshot.data!.exists) {
-                        return const Center(child: Text('User not found'));
-                      }
+                    decoration: const BoxDecoration(),
+                    child: StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user?.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(
+                              child: Text('Error loading user data'));
+                        }
+                        if (!snapshot.hasData || !snapshot.data!.exists) {
+                          return const Center(child: Text('User not found'));
+                        }
 
-                      final userData = snapshot.data!.data() as Map<String, dynamic>;
-                      final imageUrl = userData['imageUrl'] ?? '';
-                      final userName = userData['name'] ?? 'User';
-                      final userEmail = userData['email'] ?? 'Email';
+                        final userData =
+                            snapshot.data!.data() as Map<String, dynamic>;
+                        final imageUrl = userData['profileImageUrl'] ?? '';
+                        final userName = userData['name'] ?? 'User';
+                        final userEmail = userData['email'] ?? 'Email';
 
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundImage: imageUrl.isNotEmpty
-                                ? NetworkImage(imageUrl)
-                                : null,
-                            child: imageUrl.isEmpty
-                                ? const Icon(Icons.person)
-                                : null,
-                          ),
-                          const SizedBox(height: 5),
-                          MyTextt(
-                            text: userName,
-                            fontSize: 15,
-                          ),
-                          const SizedBox(height: 5),
-                          MyTextt(
-                            text: userEmail,
-                            fontSize: 12,
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundImage: imageUrl.isNotEmpty
+                                  ? NetworkImage(imageUrl)
+                                  : null,
+                              child: imageUrl.isEmpty
+                                  ? const Icon(Icons.person)
+                                  : null,
+                            ),
+                            const SizedBox(height: 5),
+                            MyTextt(
+                              text: userName,
+                              fontSize: 15,
+                            ),
+                            const SizedBox(height: 5),
+                            MyTextt(
+                              text: userEmail,
+                              fontSize: 12,
+                            ),
+                          ],
+                        );
+                      },
+                    )),
                 MyListTile(
                   title: "Home",
-             imageIcon: "assets/house.png",
+                  imageIcon: "assets/house.png",
                   onTap: () {
                     _onMenuItemSelected(0);
                   },
@@ -104,7 +107,7 @@ class _DeviderHomeState extends State<DeviderHome> {
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Add Medicines",
-                imageIcon: "assets/add-to-cart.png",
+                  imageIcon: "assets/add-to-cart.png",
                   onTap: () {
                     _onMenuItemSelected(1);
                   },
@@ -112,15 +115,15 @@ class _DeviderHomeState extends State<DeviderHome> {
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Profile",
-             
-             imageIcon: "assets/user.png",     onTap: () {
+                  imageIcon: "assets/user.png",
+                  onTap: () {
                     _onMenuItemSelected(2);
                   },
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Orders",
-                imageIcon: "assets/delivery-man.png",
+                  imageIcon: "assets/delivery-man.png",
                   onTap: () {
                     _onMenuItemSelected(3);
                   },
@@ -129,12 +132,12 @@ class _DeviderHomeState extends State<DeviderHome> {
                   padding: const EdgeInsets.only(top: 200),
                   child: MyListTile(
                     title: "LogOut",
-              imageIcon:"assets/check-out.png" ,
+                    imageIcon: "assets/check-out.png",
                     onTap: () {
                       final auth = FirebaseAuth.instance;
                       auth.signOut();
                       Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (_) => LoginW()));
+                          context, MaterialPageRoute(builder: (_) => const LoginW()));
                     },
                   ),
                 )

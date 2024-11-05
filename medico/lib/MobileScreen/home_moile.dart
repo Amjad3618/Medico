@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:medico/MobileScreen/product_detail_mobile.dart';
 import 'package:medico/utils/custom_text.dart';
 
 
 import '../Models/produ_model.dart';
+import 'my_products.dart';
 
 class HomeMobile extends StatefulWidget {
   const HomeMobile({super.key});
@@ -37,7 +39,11 @@ class _HomeMobileState extends State<HomeMobile> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset("assets/user.png",height: 30,width: 30,),
+            child: GestureDetector(
+              onTap: (){
+                // Navigator.push(context, MaterialPageRoute(builder: (_)=>const MyProducts()));
+              },
+              child: Image.asset("assets/user.png",height: 30,width: 30,)),
           )
         ],
       ),
@@ -87,7 +93,7 @@ class _HomeMobileState extends State<HomeMobile> {
 
                       return InkWell(
                         onTap: () {
-                          // Navigate to product detail screen if necessary
+                 Navigator.push(context, MaterialPageRoute(builder: (_)=>ProductDetailMobile(medicine: medicine,)));
                         },
                         child: Container(
                           margin: const EdgeInsets.all(10),
