@@ -41,7 +41,7 @@ class _ProfileScreenwebState extends State<ProfileScreenweb> {
         await user.reload();
         final DocumentSnapshot doc = await _firestore.collection('users').doc(user.uid).get();
 
-        if (doc.exists) {
+        if (doc.exists) { 
           final data = doc.data() as Map<String, dynamic>;
           setState(() {
             _nameController.text = data['name'] ?? '';

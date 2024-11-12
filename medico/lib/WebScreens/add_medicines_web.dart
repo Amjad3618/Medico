@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Add Firebase Auth
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:html' as html;
 import '../Models/produ_model.dart';
 import '../utils/custom_text.dart';
-
 import '../utils/custome_form.dart';
 
 class AddMedicineWeb extends StatefulWidget {
@@ -43,25 +43,23 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
   String? _selectedCity;
 
   Future<void> _pickImage() async {
-    final html.FileUploadInputElement uploadInput =
-        html.FileUploadInputElement();
-    uploadInput.accept = 'image/*'; // Accept only image files
-    uploadInput.click(); // Trigger the file picker dialog
+    final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = 'image/*';
+    uploadInput.click();
 
     uploadInput.onChange.listen((e) {
       final files = uploadInput.files;
       if (files != null && files.isNotEmpty) {
         setState(() {
-          _imageFile = files[0]; // Assign the selected Blob
-          _imagePreviewUrl =
-              html.Url.createObjectUrl(_imageFile!); // Create a URL for preview
+          _imageFile = files[0];
+          _imagePreviewUrl = html.Url.createObjectUrl(_imageFile!);
         });
       }
     });
   }
 
   Future<String?> _uploadImage() async {
-    if (_imageFile == null) return null; // Ensure an image is selected
+    if (_imageFile == null) return null;
 
     try {
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -70,19 +68,17 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
           .child('medicine_images')
           .child('$fileName.jpg');
 
-      // Upload the image as Blob
       final UploadTask uploadTask = storageRef.putBlob(_imageFile!);
       final TaskSnapshot snapshot = await uploadTask;
 
-      final String downloadUrl =
-          await snapshot.ref.getDownloadURL(); // Get the download URL
-      print("Image uploaded successfully: $downloadUrl"); // Debug print
-      return downloadUrl; // Return the URL
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
+      print("Image uploaded successfully: $downloadUrl");
+      return downloadUrl;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error uploading image: $e')),
       );
-      return null; // Handle upload errors
+      return null;
     }
   }
 
@@ -97,20 +93,40 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
         imageUrl = await _uploadImage();
       }
 
+      if (imageUrl == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please upload an image')),
+        );
+        setState(() => isLoading = false);
+        return;
+      }
+
+      // Get the current user's ID to set as sellerId
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not logged in')),
+        );
+        setState(() => isLoading = false);
+        return;
+      }
+      final String sellerId = user.uid;
+
+      final DocumentReference docRef = FirebaseFirestore.instance.collection('medicines').doc();
+
       final product = ProductModel(
         name: _medicineNameController.text,
         price: isDonation ? "0" : _priceController.text,
-        sellerName: _phoneController.text,
         description: _descriptionController.text,
         city: _selectedCity,
         isDonated: isDonation,
         productImage: imageUrl,
         country: _countryController.text,
+        productId: docRef.id,
+      sellerId: user.uid, // Set the sellerId here
       );
 
-      await FirebaseFirestore.instance
-          .collection('medicines')
-          .add(product.toJson());
+      await docRef.set(product.toJson());
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Medicine added successfully!')),
@@ -169,8 +185,7 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                                 child: SingleChildScrollView(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       CustomTextFormField(
                                         controller: _medicineNameController,
@@ -190,12 +205,10 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                                               child: CustomTextFormField(
                                                 controller: _priceController,
                                                 hintText: "Price",
-                                                keyboardType:
-                                                    TextInputType.number,
+                                                keyboardType: TextInputType.number,
                                                 validator: (value) {
                                                   if (!isDonation &&
-                                                      (value?.isEmpty ??
-                                                          true)) {
+                                                      (value?.isEmpty ?? true)) {
                                                     return 'Please enter price';
                                                   }
                                                   return null;
@@ -212,8 +225,7 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                                             onChanged: (value) {
                                               setState(() {
                                                 isDonation = value;
-                                                if (isDonation)
-                                                  _priceController.clear();
+                                                if (isDonation) _priceController.clear();
                                               });
                                             },
                                           ),
@@ -281,10 +293,8 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              color: Colors.grey, width: 1),
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(color: Colors.grey, width: 1),
                                         ),
                                         child: _imagePreviewUrl != null
                                             ? Image.network(
@@ -294,8 +304,7 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                                             : const Center(
                                                 child: Text(
                                                   'No image selected',
-                                                  style:
-                                                      TextStyle(fontSize: 16),
+                                                  style: TextStyle(fontSize: 16),
                                                 ),
                                               ),
                                       ),
@@ -304,22 +313,22 @@ class _AddMedicineWebState extends State<AddMedicineWeb> {
                                         onPressed: _pickImage,
                                         child: const Text("Upload Image"),
                                       ),
-                                      const SizedBox(height: 20),
-                                      ElevatedButton(
-                                        onPressed: isLoading
-                                            ? null
-                                            : _saveMedicineData, // Disable button when loading
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 24, vertical: 12),
+                                      const SizedBox(height: 30),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed:
+                                              isLoading ? null : _saveMedicineData,
+                                          child: isLoading
+                                              ? const CircularProgressIndicator()
+                                              : const Text(
+                                                  "Add Medicine",
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold),
+                                                ),
                                         ),
-                                        child: isLoading
-                                            ? const CircularProgressIndicator(
-                                                color: Colors
-                                                    .white, // Customize color to match button text
-                                              )
-                                            : const Text("Add Medicine"),
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ))))))));

@@ -1,6 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, prefer_conditional_assignment
-
-import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,28 +27,15 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
   final _descriptionController = TextEditingController();
   final _countryController = TextEditingController();
   final _phoneController = TextEditingController();
-    final _sellernameController = TextEditingController();
+  final _sellernameController = TextEditingController();
 
-  final List<String> _cities = [
-    "Karachi",
-    "Lahore",
-    "Islamabad",
-    "Rawalpindi",
-    "Faisalabad",
-    "Multan",
-    "Peshawar",
-    "Quetta",
-    "Sialkot",
-    "Hyderabad"
-  ];
-
+  final List<String> _cities = ["Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", "Multan", "Peshawar", "Quetta", "Sialkot", "Hyderabad"];
   String? _selectedCity;
 
   Future<void> _pickImage() async {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
       if (image != null) {
         final imageData = await image.readAsBytes();
         setState(() {
@@ -68,7 +53,6 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
 
   Future<String?> _uploadImage() async {
     if (_imageFile == null) return null;
-
     try {
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
       final Reference storageRef = FirebaseStorage.instance
@@ -78,8 +62,7 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
 
       final UploadTask uploadTask = storageRef.putData(_imageFile!);
       final TaskSnapshot snapshot = await uploadTask;
-      final String downloadUrl = await snapshot.ref.getDownloadURL();
-      return downloadUrl;
+      return await snapshot.ref.getDownloadURL();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error uploading image: $e')),
@@ -87,61 +70,66 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
       return null;
     }
   }
-Future<void> _saveMedicineData() async {
-  if (!_formKey.currentState!.validate()) return;
 
-  // Ensure an image is selected and uploaded before proceeding
-  if (_imageFile == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please select an image')),
-    );
-    return;
-  }
-
-  setState(() => isLoading = true);
-
-  try {
-    // Wait for _imageUrl to be populated
-    if (_imageUrl == null) {
-      _imageUrl = await _uploadImage();
-    }
-
-    if (_imageUrl == null) {
+  Future<void> _saveMedicineData() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Image upload failed')),
+        const SnackBar(content: Text('Please log in to save medicine')),
       );
       return;
     }
 
-    // Create product model with valid image URL
-    final product = ProductModel(
-      name: _medicineNameController.text,
-      price: isDonation ? "0" : _priceController.text,
-      sellerName: _sellernameController.text,
-      description: _descriptionController.text,
-      city: _selectedCity,
-      isDonated: isDonation,
-      productImage: _imageUrl, // Use the non-null URL here
-      country: _countryController.text,
-    );
+    if (!_formKey.currentState!.validate()) return;
 
-    await FirebaseFirestore.instance
-        .collection('medicines')
-        .add(product.toJson());
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an image')),
+      );
+      return;
+    }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Medicine added successfully!')),
-    );
+    setState(() => isLoading = true);
 
-    _clearForm();
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: ${e.toString()}')),
-    );
-  } finally {
-    setState(() => isLoading = false);
+    try {
+      _imageUrl ??= await _uploadImage();
+
+      if (_imageUrl == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Image upload failed')),
+        );
+        return;
+      }
+
+      final docRef = FirebaseFirestore.instance.collection('medicines').doc();
+
+      final product = ProductModel(
+        name: _medicineNameController.text,
+        price: isDonation ? "0" : _priceController.text,
+        description: _descriptionController.text,
+        city: _selectedCity,
+        isDonated: isDonation,
+        productImage: _imageUrl,
+        country: _countryController.text,
+        productId: docRef.id,
+        sellerId: currentUser.uid, // Ensure current user UID is set correctly
+      );
+
+      await docRef.set(product.toJson());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Medicine added successfully!')),
+      );
+
+      _clearForm();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
-}
 
   void _clearForm() {
     _medicineNameController.clear();
@@ -183,7 +171,7 @@ Future<void> _saveMedicineData() async {
                   },
                 ),
                 const SizedBox(height: 16),
-                if (!isDonation) ...[
+                if (!isDonation)
                   CustomTextFormField(
                     controller: _priceController,
                     hintText: "Price",
@@ -195,8 +183,7 @@ Future<void> _saveMedicineData() async {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
-                ],
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     const Text("Donation?"),
@@ -255,18 +242,11 @@ Future<void> _saveMedicineData() async {
                       _selectedCity = newValue;
                     });
                   },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 15,
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  maxLines: 4,
-                  maxLength: 200,
+                  maxLines: 5,
+                  maxLength: 500,
                   controller: _descriptionController,
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
@@ -304,11 +284,16 @@ Future<void> _saveMedicineData() async {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange,textStyle: const TextStyle(color: Colors.white,fontSize: 20),),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    textStyle: const TextStyle(color: Colors.white, fontSize: 20),
+                  ),
                   onPressed: isLoading ? null : _saveMedicineData,
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(isLoading ? 'Saving...' : 'Save Medicine'),
+                    padding: const EdgeInsets.all(8.0),
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text("Add Medicine"),
                   ),
                 ),
               ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medico/WebScreens/add_medicines_web.dart';
 import 'package:medico/WebScreens/home_web_screen.dart';
 import 'package:medico/WebScreens/login_w.dart';
+import 'package:medico/WebScreens/my_medicines.dart';
 import 'package:medico/WebScreens/order_web.dart';
 import 'package:medico/WebScreens/profile_web.dart';
 import 'package:medico/utils/custom_text.dart';
@@ -22,7 +23,8 @@ class _DeviderHomeState extends State<DeviderHome> {
     const HomeWeb(),
     const AddMedicineWeb(),
      const ProfileScreenweb(),
-     const OrderRecevingPageWeb()
+     const OrderRecevingPageWeb(),
+     const MyMedicinesPage()
   ];
 
   void _onMenuItemSelected(int index) {
@@ -126,6 +128,14 @@ class _DeviderHomeState extends State<DeviderHome> {
                   imageIcon: "assets/delivery-man.png",
                   onTap: () {
                     _onMenuItemSelected(3);
+                  },
+                ),
+                const SizedBox(height: 15),
+                MyListTile(
+                  title: "my ",
+                  imageIcon: "assets/delivery-man.png",
+                  onTap: () {
+                    _onMenuItemSelected(4);
                   },
                 ),
                 Padding(

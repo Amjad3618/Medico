@@ -158,7 +158,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        MyTextt(text: medicine.sellerName ?? 'N/A', fontSize: 20, fontWeight: FontWeight.w400),
+                                        
                                         MyTextt(text: medicine.name ?? 'N/A', fontSize: 20, fontWeight: FontWeight.w400),
                                         MyTextt(text: medicine.isDonated! ? 'Free' : 'Rs ${medicine.price}', fontSize: 20, fontWeight: FontWeight.w400),
                                         MyTextt(text: medicine.country ?? 'N/A', fontSize: 20, fontWeight: FontWeight.w400),

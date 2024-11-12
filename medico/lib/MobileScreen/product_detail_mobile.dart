@@ -270,12 +270,7 @@ class _ProductDetailMobileState extends State<ProductDetailMobile> {
               ),
               const SizedBox(height: 10),
 
-              Text(
-                'Seller: ${widget.medicine.sellerName ?? 'N/A'}',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 10),
-
+             
               Text(
                 'Location: ${widget.medicine.city ?? 'N/A'}, ${widget.medicine.country ?? 'N/A'}',
                 style: Theme.of(context).textTheme.titleMedium,

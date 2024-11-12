@@ -1,24 +1,24 @@
 class ProductModel {
   String? name;
   String? price;
-  String? sellerName;
   String? description;
   String? city;
   bool? isDonated;
   String? productImage;
   String? country;
-
-  var id;
+  String? productId;
+  String? sellerId; // New field to store the ID of the user who added the product
 
   ProductModel({
     this.name,
     this.price,
-    this.sellerName,
     this.description,
     this.city,
     this.isDonated,
     this.productImage,
     this.country,
+    this.productId,
+    this.sellerId, // Initialize the new field in the constructor
   });
 
   // Factory method to create an instance of ProductModel from JSON
@@ -26,12 +26,13 @@ class ProductModel {
     return ProductModel(
       name: json['name'],
       price: json['price'],
-      sellerName: json['sellerName'],
       description: json['description'],
       city: json['city'],
       isDonated: json['isDonated'],
       productImage: json['productImage'],
       country: json['country'],
+      productId: json['productId'],
+      sellerId: json['sellerId'], // Assign the sellerId from JSON
     );
   }
 
@@ -40,12 +41,13 @@ class ProductModel {
     return {
       'name': name,
       'price': price,
-      'sellerName': sellerName,
       'description': description,
       'city': city,
       'isDonated': isDonated,
       'productImage': productImage,
       'country': country,
+      'productId': productId,
+      'sellerId': sellerId, // Include sellerId in the JSON output
     };
   }
 }
