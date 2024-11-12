@@ -132,8 +132,8 @@ class _DeviderHomeState extends State<DeviderHome> {
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
-                  title: "my ",
-                  imageIcon: "assets/delivery-man.png",
+                  title: "My Products ",
+                  imageIcon: "assets/bundling.png",
                   onTap: () {
                     _onMenuItemSelected(4);
                   },

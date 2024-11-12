@@ -37,13 +37,14 @@ class _HomeMobileState extends State<HomeMobile> {
           fontWeight: FontWeight.bold,
         ),
         actions: [
+          const Text("All products"),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: (){
-                // Navigator.push(context, MaterialPageRoute(builder: (_)=>const MyProducts()));
+                Navigator.push(context, MaterialPageRoute(builder: (_)=>const MyProducts()));
               },
-              child: Image.asset("assets/user.png",height: 30,width: 30,)),
+              child: Image.asset("assets/bundling.png",height: 30,width: 30,)),
           )
         ],
       ),

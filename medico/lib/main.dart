@@ -1,10 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'package:medico/MobileScreen/login_m.dart';
-import 'package:medico/Responsives/lauout_code.dart';
-
-import 'package:medico/WebScreens/login_w.dart';
 import 'package:medico/utils/uiHelper.dart';
 
 void main() async {

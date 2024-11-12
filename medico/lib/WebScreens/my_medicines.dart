@@ -61,6 +61,7 @@ class _MyMedicinesPageState extends State<MyMedicinesPage> {
                       margin: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 8),
                       child: ListTile(
+                        leading: CircleAvatar(backgroundImage: NetworkImage(medicineData['productImage']),),
                         title: Text(medicineData['name']),
                         subtitle: Text("Price: ${medicineData['price']}"),
                         trailing: IconButton(

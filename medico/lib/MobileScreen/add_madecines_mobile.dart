@@ -16,6 +16,8 @@ class AddMedicineMobile extends StatefulWidget {
 }
 
 class _AddMedicineMobileState extends State<AddMedicineMobile> {
+
+  int _currentWordCount = 0; // New variable to track word count
   bool isDonation = false;
   bool isLoading = false;
   Uint8List? _imageFile;
@@ -29,7 +31,18 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
   final _phoneController = TextEditingController();
   final _sellernameController = TextEditingController();
 
-  final List<String> _cities = ["Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", "Multan", "Peshawar", "Quetta", "Sialkot", "Hyderabad"];
+  final List<String> _cities = [
+    "Karachi",
+    "Lahore",
+    "Islamabad",
+    "Rawalpindi",
+    "Faisalabad",
+    "Multan",
+    "Peshawar",
+    "Quetta",
+    "Sialkot",
+    "Hyderabad"
+  ];
   String? _selectedCity;
 
   Future<void> _pickImage() async {
@@ -149,7 +162,7 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const MyTextt(text: "Add Medicine"),
+        title: const MyTextt(text: "Add Medicine OR donate blood",fontSize: 30,color: Colors.black,),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -245,12 +258,25 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  maxLines: 5,
-                  maxLength: 500,
+                  maxLines: 5, // Allows the field to expand as needed
                   controller: _descriptionController,
+                  onChanged: (value) {
+                    setState(() {
+                      // Calculate word count as the user types
+                      _currentWordCount = value.trim().split(RegExp(r'\s+')).length;
+                    });
+                  },
                   validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter description';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a description';
+                    }
+
+                    final wordCount = value.trim().split(RegExp(r'\s+')).length;
+
+                    if (wordCount < 300) {
+                      return 'Please enter at least 300 words';
+                    } else if (wordCount > 700) {
+                      return 'Please enter no more than 700 words';
                     }
                     return null;
                   },
@@ -282,15 +308,16 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                           ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 15),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
-                    textStyle: const TextStyle(color: Colors.white, fontSize: 20),
+                    textStyle:
+                        const TextStyle(color: Colors.orange, fontSize: 20),
                   ),
                   onPressed: isLoading ? null : _saveMedicineData,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(15.0),
                     child: isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text("Add Medicine"),
