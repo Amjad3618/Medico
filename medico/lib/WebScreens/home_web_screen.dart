@@ -32,17 +32,27 @@ class _HomeWebState extends State<HomeWeb> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const MyTextt(
-          text: "Free Medico",
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        title: Row(
+          children: [
+            Container(
+              height: 50,
+              width: 50,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: Image.asset('assets/logo.png',fit: BoxFit.cover,)),
+            ),
+            const SizedBox(width: 8,),
+            const MyTextt(
+              text: "Free Medico",
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.person_3_outlined),
-          ),
-        ],
+      
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -152,31 +162,31 @@ class _HomeWebState extends State<HomeWeb> {
                                 const SizedBox(height: 10),
                               
                                 Text(
-                                  "Product Name:   ${medicineData['name'] ?? 'N/A'}",
+                                  " Name:   ${medicineData['name'] ?? 'N/A'}",
                                   style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
                                   "Price:   Rs ${medicineData['price'] ?? 'N/A'}",
                                   style: const TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w400),
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 5),
-                                Text(
-                                  "Country:   ${medicineData['country'] ?? 'N/A'}",
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                const SizedBox(height: 5),
+                                // Text(
+                                //   "Country:   ${medicineData['country'] ?? 'N/A'}",
+                                //   style: const TextStyle(
+                                //       fontSize: 16,
+                                //       fontWeight: FontWeight.w400),
+                                // ),
+                                // const SizedBox(height: 5),
                                 Text(
                                   "City:   ${medicineData['city'] ?? 'N/A'}",
                                   style: const TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w400),
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 5),
                                 Text(

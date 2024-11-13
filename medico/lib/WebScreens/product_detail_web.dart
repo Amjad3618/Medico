@@ -187,7 +187,8 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Product Image
               Center(
@@ -206,10 +207,7 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
               const SizedBox(height: 20),
 
               // Product Details
-              ProductInfoRow(
-                label: "Seller Name:",
-                value: widget.productData['sellerName'] ?? "N/A",
-              ),
+             
               ProductInfoRow(
                 label: "Product Name:",
                 value: widget.productData['name'] ?? "N/A",
@@ -253,10 +251,13 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.orange,),
-                    onPressed: _showOrderBottomSheet,
-                    child: const Text("Order"),
+                  SizedBox(
+                    width: 200,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue,textStyle: const TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold)),
+                      onPressed: _showOrderBottomSheet,
+                      child: const Text("Order"),
+                    ),
                   ),
                 ],
               )
@@ -283,14 +284,21 @@ class ProductInfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
-      child: RichText(
-        text: TextSpan(
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-          children: [
-            TextSpan(text: label, style: const TextStyle(fontWeight: FontWeight.bold)),
-            TextSpan(text: ' $value'),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          
+        
+          Text(
+            label,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(width: 10), // Adjust width as needed
+          Text(
+            value,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }

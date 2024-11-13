@@ -8,7 +8,7 @@ void main() async {
   await Firebase.initializeApp(
       options: const FirebaseOptions(
           apiKey: "AIzaSyB9lM1XebxHtrcZQYvZRHfF1aSFsCj0ISk",
-          authDomain: "medico-533fd.firebaseapp.com",
+          authDomain: "medico-533fd.firebaseapp.com",  
           projectId: "medico-533fd",
           storageBucket: "medico-533fd.appspot.com",
           messagingSenderId: "479462515526",

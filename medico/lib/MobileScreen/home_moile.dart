@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:medico/MobileScreen/ask_for_blood_m.dart';
 import 'package:medico/MobileScreen/product_detail_mobile.dart';
+import 'package:medico/WebScreens/my_blood_requests.dart';
 import 'package:medico/utils/custom_text.dart';
 
-
 import '../Models/produ_model.dart';
+import '../utils/my_list_tile.dart';
+import 'blood_view_mobile.dart';
 import 'my_products.dart';
 
 class HomeMobile extends StatefulWidget {
@@ -30,23 +33,73 @@ class _HomeMobileState extends State<HomeMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const MyTextt(
-          text: "Free Medico",
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+       
+        title: Row(
+          children: [
+            Container(
+              height: 50,
+              width: 50,
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: Image.asset(
+                    'assets/logo.png',
+                    fit: BoxFit.cover,
+                  )),
+            ),
+            const MyTextt(
+              text: "Free Medico",
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            
+          ],
         ),
         actions: [
           const Text("All products"),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (_)=>const MyProducts()));
-              },
-              child: Image.asset("assets/bundling.png",height: 30,width: 30,)),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const MyProducts()));
+                },
+                child: Image.asset(
+                  "assets/bundling.png",
+                  height: 30,
+                  width: 30,
+                )),
           )
         ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            const SizedBox(height: 30,),
+            MyListTile(
+                title: "Ask for Blood",
+                imageIcon: "assets/blood-bag.png",
+                onTap: () {
+                  Navigator.push(context,MaterialPageRoute(builder: (context)=>AskForBloodMobile()));
+                }),
+                const SizedBox(height: 20,),
+                MyListTile(
+                  title: "Donate Blood",
+                  imageIcon: "assets/arm.png",
+                  onTap: () {
+                     Navigator.push(context,MaterialPageRoute(builder: (context)=>const BloodViewMobile()));
+                  }
+                ),
+                  const SizedBox(height: 20,),
+                 MyListTile(
+                  title: "My Blood Requests",
+                  imageIcon: "assets/arm.png",
+                  onTap: () {
+                     Navigator.push(context,MaterialPageRoute(builder: (context)=>const MyBloodRequests()));
+                  }
+                ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -58,9 +111,9 @@ class _HomeMobileState extends State<HomeMobile> {
               width: MediaQuery.of(context).size.width * 0.5,
               child: TextFormField(
                 controller: _searchCtrl,
-                decoration:  InputDecoration(
-                  
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   hintText: "Search..",
                 ),
                 onChanged: (value) {
@@ -84,7 +137,7 @@ class _HomeMobileState extends State<HomeMobile> {
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(child: Text('No medicines found'));
                   }
-                  
+
                   return ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
@@ -94,7 +147,12 @@ class _HomeMobileState extends State<HomeMobile> {
 
                       return InkWell(
                         onTap: () {
-                 Navigator.push(context, MaterialPageRoute(builder: (_)=>ProductDetailMobile(medicine: medicine,)));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ProductDetailMobile(
+                                        medicine: medicine,
+                                      )));
                         },
                         child: Container(
                           margin: const EdgeInsets.all(10),
@@ -118,7 +176,8 @@ class _HomeMobileState extends State<HomeMobile> {
                                       child: Image.network(
                                         medicine.productImage!,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
                                           return Container(
                                             color: Colors.grey[300],
                                             child: const Center(
@@ -143,28 +202,67 @@ class _HomeMobileState extends State<HomeMobile> {
                                   ),
                                 const SizedBox(height: 10),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        MyTextt(text: "Seller name", fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: "Product name", fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: "Price", fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: "Country", fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: "City", fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: "Donation", fontSize: 20, fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: "Seller name",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: "Product name",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: "Price",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: "Country",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: "City",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: "Donation",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
                                       ],
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
-                                        
-                                        MyTextt(text: medicine.name ?? 'N/A', fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: medicine.isDonated! ? 'Free' : 'Rs ${medicine.price}', fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: medicine.country ?? 'N/A', fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: medicine.city ?? 'N/A', fontSize: 20, fontWeight: FontWeight.w400),
-                                        MyTextt(text: medicine.isDonated! ? "Yes" : "No", fontSize: 20, fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: medicine.name ?? 'N/A',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: medicine.isDonated!
+                                                ? 'Free'
+                                                : 'Rs ${medicine.price}',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: medicine.country ?? 'N/A',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: medicine.city ?? 'N/A',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
+                                        MyTextt(
+                                            text: medicine.isDonated!
+                                                ? "Yes"
+                                                : "No",
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400),
                                       ],
                                     ),
                                   ],

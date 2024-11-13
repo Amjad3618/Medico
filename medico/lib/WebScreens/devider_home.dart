@@ -2,29 +2,36 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:medico/WebScreens/add_medicines_web.dart';
+import 'package:medico/WebScreens/ask_for_blood.dart';
+import 'package:medico/WebScreens/blood_home.dart';
 import 'package:medico/WebScreens/home_web_screen.dart';
 import 'package:medico/WebScreens/login_w.dart';
+import 'package:medico/WebScreens/my_blood_requests.dart';
 import 'package:medico/WebScreens/my_medicines.dart';
 import 'package:medico/WebScreens/order_web.dart';
 import 'package:medico/WebScreens/profile_web.dart';
 import 'package:medico/utils/custom_text.dart';
 import 'package:medico/utils/my_list_tile.dart';
 
-class DeviderHome extends StatefulWidget {
-  const DeviderHome({super.key});
+class DividerHome extends StatefulWidget {
+  const DividerHome({super.key});
 
   @override
-  State<DeviderHome> createState() => _DeviderHomeState();
+  State<DividerHome> createState() => _DividerHomeState();
 }
 
-class _DeviderHomeState extends State<DeviderHome> {
+class _DividerHomeState extends State<DividerHome> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     const HomeWeb(),
     const AddMedicineWeb(),
-     const ProfileScreenweb(),
-     const OrderRecevingPageWeb(),
-     const MyMedicinesPage()
+    const ProfileScreenweb(),
+    const OrderRecevingPageWeb(),
+    const MyMedicinesPage(),
+    BloodDonationForm(),
+     const MyBloodRequests(),
+    const BloodHome(),
+   
   ];
 
   void _onMenuItemSelected(int index) {
@@ -46,97 +53,107 @@ class _DeviderHomeState extends State<DeviderHome> {
               padding: EdgeInsets.zero,
               children: [
                 DrawerHeader(
-                    decoration: const BoxDecoration(),
-                    child: StreamBuilder<DocumentSnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(user?.uid)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (snapshot.hasError) {
-                          return const Center(
-                              child: Text('Error loading user data'));
-                        }
-                        if (!snapshot.hasData || !snapshot.data!.exists) {
-                          return const Center(child: Text('User not found'));
-                        }
-
-                        final userData =
-                            snapshot.data!.data() as Map<String, dynamic>;
-                        final imageUrl = userData['profileImageUrl'] ?? '';
-                        final userName = userData['name'] ?? 'User';
-                        final userEmail = userData['email'] ?? 'Email';
-
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundImage: imageUrl.isNotEmpty
-                                  ? NetworkImage(imageUrl)
-                                  : null,
-                              child: imageUrl.isEmpty
-                                  ? const Icon(Icons.person)
-                                  : null,
-                            ),
-                            const SizedBox(height: 5),
-                            MyTextt(
-                              text: userName,
-                              fontSize: 15,
-                            ),
-                            const SizedBox(height: 5),
-                            MyTextt(
-                              text: userEmail,
-                              fontSize: 12,
-                            ),
-                          ],
+                  decoration: const BoxDecoration(),
+                  child: StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user?.uid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
                         );
-                      },
-                    )),
+                      }
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text('Error loading user data'),
+                        );
+                      }
+                      if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return const Center(child: Text('User not found'));
+                      }
+
+                      final userData =
+                          snapshot.data!.data() as Map<String, dynamic>;
+                      final imageUrl = userData['profileImageUrl'] ?? '';
+                      final userName = userData['name'] ?? 'User';
+                      final userEmail = userData['email'] ?? 'Email';
+
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundImage: imageUrl.isNotEmpty
+                                ? NetworkImage(imageUrl)
+                                : null,
+                            child: imageUrl.isEmpty
+                                ? const Icon(Icons.person)
+                                : null,
+                          ),
+                          const SizedBox(height: 5),
+                          MyTextt(
+                            text: userName,
+                            fontSize: 15,
+                          ),
+                          const SizedBox(height: 5),
+                          MyTextt(
+                            text: userEmail,
+                            fontSize: 12,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
                 MyListTile(
                   title: "Home",
                   imageIcon: "assets/house.png",
-                  onTap: () {
-                    _onMenuItemSelected(0);
-                  },
+                  onTap: () => _onMenuItemSelected(0),
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Add Medicines",
                   imageIcon: "assets/add-to-cart.png",
-                  onTap: () {
-                    _onMenuItemSelected(1);
-                  },
+                  onTap: () => _onMenuItemSelected(1),
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Profile",
                   imageIcon: "assets/user.png",
-                  onTap: () {
-                    _onMenuItemSelected(2);
-                  },
+                  onTap: () => _onMenuItemSelected(2),
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
                   title: "Orders",
                   imageIcon: "assets/delivery-man.png",
-                  onTap: () {
-                    _onMenuItemSelected(3);
-                  },
+                  onTap: () => _onMenuItemSelected(3),
                 ),
                 const SizedBox(height: 15),
                 MyListTile(
-                  title: "My Products ",
+                  title: "My Products",
                   imageIcon: "assets/bundling.png",
-                  onTap: () {
-                    _onMenuItemSelected(4);
-                  },
+                  onTap: () => _onMenuItemSelected(4),
+                ),
+                const SizedBox(height: 15),
+                MyListTile(
+                  title: "Ask for Blood",
+                  imageIcon: "assets/blood-bag.png",
+                  onTap: () => _onMenuItemSelected(5),
+                ),
+                const SizedBox(height: 15),
+                MyListTile(
+                  title: "My Blood Requests",
+                  imageIcon: "assets/arm.png",
+                  onTap: () => _onMenuItemSelected(6),
+                ),
+                const SizedBox(height: 15),
+                MyListTile(
+                  title: "Donate Blood",
+                  imageIcon: "assets/arm.png",
+                  onTap: () => _onMenuItemSelected(7),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 200),
@@ -144,13 +161,14 @@ class _DeviderHomeState extends State<DeviderHome> {
                     title: "LogOut",
                     imageIcon: "assets/check-out.png",
                     onTap: () {
-                      final auth = FirebaseAuth.instance;
-                      auth.signOut();
+                      FirebaseAuth.instance.signOut();
                       Navigator.pushReplacement(
-                          context, MaterialPageRoute(builder: (_) => const LoginW()));
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginW()),
+                      );
                     },
                   ),
-                )
+                ),
               ],
             ),
           ),

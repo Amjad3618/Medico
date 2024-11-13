@@ -18,6 +18,7 @@ class _LoginWState extends State<LoginW> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   Future<void> _loginUser() async {
     if (_formKey.currentState!.validate()) {
@@ -33,7 +34,7 @@ class _LoginWState extends State<LoginW> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const DeviderHome()),
+          MaterialPageRoute(builder: (_) => const DividerHome()),
         );
       } on FirebaseAuthException catch (e) {
         String message = 'An error occurred';
@@ -71,6 +72,10 @@ class _LoginWState extends State<LoginW> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.asset('assets/logo.png', height: 100),
+                  ),
                   const MyTextt(
                     text: "Welcome back",
                     fontSize: 30,
@@ -95,11 +100,28 @@ class _LoginWState extends State<LoginW> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  CustomTextFormField(
-                    hintText: "Password",
+                  TextFormField(
                     controller: _passwordController,
-                    prefixIcon: const Icon(Icons.lock),
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
+                    decoration: InputDecoration(
+                      border:  OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20)
+                      ),
+                      hintText: "Password",
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty || value.length < 6) {
                         return 'Password should be at least 6 characters';
@@ -117,7 +139,8 @@ class _LoginWState extends State<LoginW> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const SignUpW()),
+                            MaterialPageRoute(
+                                builder: (_) => const SignUpW()),
                           );
                         },
                         child: const MyTextt(

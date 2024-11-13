@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medico/utils/custome-button.dart';
-
 import '../data/firebase_auth_services.dart';
-
 
 class SignUpW extends StatefulWidget {
   const SignUpW({super.key});
@@ -20,9 +18,10 @@ class _SignUpWState extends State<SignUpW> {
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   XFile? _pickedImageFile;
-  
-  // Create an instance of FirebaseAuthService
+
   final FirebaseAuthService _authService = FirebaseAuthService();
+  bool _isPasswordVisible = false;
+  bool _isLoading = false; // Track loading state
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -36,8 +35,18 @@ class _SignUpWState extends State<SignUpW> {
   }
 
   Future<void> _signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
+
     try {
-      // Call the complete sign-up process from FirebaseAuthService
       await _authService.completeSignUpProcess(
         email: _emailController.text,
         password: _passwordController.text,
@@ -45,12 +54,16 @@ class _SignUpWState extends State<SignUpW> {
         profileImage: _pickedImageFile,
       );
 
-      // Navigate back after successful sign-up
-      Navigator.pop(context);
-
+      Navigator.pop(context); // Close loading dialog
+      Navigator.pop(context); // Navigate back after successful sign-up
       print('User created successfully!');
     } catch (e) {
+      Navigator.pop(context); // Close loading dialog on error
       print('An error occurred: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -131,11 +144,23 @@ class _SignUpWState extends State<SignUpW> {
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
-                      obscureText: true,
+                      obscureText: !_isPasswordVisible,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
@@ -156,13 +181,15 @@ class _SignUpWState extends State<SignUpW> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text('Login',
-                              style: TextStyle(color: Colors.blue)),
+                          child: const Text(
+                            'Login',
+                            style: TextStyle(color: Colors.blue),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    MyElevatedButton(
+                _isLoading?const CircularProgressIndicator():    MyElevatedButton(
                       text: 'SignUp',
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {

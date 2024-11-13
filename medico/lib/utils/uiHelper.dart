@@ -26,7 +26,7 @@ class UIHelper extends StatelessWidget {
     } else if (snapshot.hasData && snapshot.data != null) {
       final screenWidth = MediaQuery.of(context).size.width;
       return screenWidth > 800 
-          ? const DeviderHome()
+          ? const DividerHome()
           : const BottomNavMobile();
     } else {
       return const LayoutCode(
