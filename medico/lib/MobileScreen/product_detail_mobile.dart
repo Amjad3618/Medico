@@ -294,15 +294,24 @@ class _ProductDetailMobileState extends State<ProductDetailMobile> {
 
               const SizedBox(height: 30),
               Center(
-                child: ElevatedButton(
-                  onPressed: _showOrderBottomSheet,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(200, 50), // Made button larger
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _showOrderBottomSheet,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue
+                        ,textStyle: const TextStyle(color: Colors.white),
+                        minimumSize: const Size(200, 50), // Made button larger
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: const Text('Order Now'),
                     ),
-                  ),
-                  child: const Text('Order Now'),
+                     const SizedBox(width: 20,),
+                  TextButton(onPressed: (){}, child: const Text("Call us"))
+                  ],
                 ),
               ),
             ],

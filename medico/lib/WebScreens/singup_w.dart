@@ -86,6 +86,11 @@ class _SignUpWState extends State<SignUpW> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    ClipRRect(
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.asset('assets/logo.png', height: 100),
+                  ),
+                  const SizedBox(height: 8),
                     const Text(
                       'Register New User',
                       style: TextStyle(

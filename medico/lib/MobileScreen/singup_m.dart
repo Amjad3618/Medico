@@ -81,6 +81,11 @@ class _SignUpMState extends State<SignUpM> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                 ClipRRect(
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.asset('assets/logo.png', height: 100),
+                  ),
+                  const SizedBox(height: 8),
                 const MyTextt(
                   text: "Welcome Back",
                   fontSize: 30,

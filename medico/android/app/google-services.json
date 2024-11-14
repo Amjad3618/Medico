@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:479462515526:android:f00065fd361697b4c37b47",
+        "mobilesdk_app_id": "1:479462515526:android:20df9d5977e11297c37b47",
         "android_client_info": {
-          "package_name": "com.exapmle.medico"
+          "package_name": "com.example.medico"
         }
       },
       "oauth_client": [],

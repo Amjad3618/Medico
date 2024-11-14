@@ -259,6 +259,8 @@ class _ProductDetailWebState extends State<ProductDetailWeb> {
                       child: const Text("Order"),
                     ),
                   ),
+                  SizedBox(width: 20,),
+                  TextButton(onPressed: (){}, child: const Text("Call us"))
                 ],
               )
             ],

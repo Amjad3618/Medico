@@ -50,4 +50,6 @@ class ProductModel {
       'sellerId': sellerId, // Include sellerId in the JSON output
     };
   }
+
+  static fromMap(Map<String, dynamic> data) {}
 }

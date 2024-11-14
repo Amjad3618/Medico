@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:medico/MobileScreen/ask_for_blood_m.dart';
+import 'package:medico/MobileScreen/login_m.dart';
 import 'package:medico/MobileScreen/product_detail_mobile.dart';
 import 'package:medico/WebScreens/my_blood_requests.dart';
 import 'package:medico/utils/custom_text.dart';
-
 import '../Models/produ_model.dart';
 import '../utils/my_list_tile.dart';
 import 'blood_view_mobile.dart';
@@ -33,7 +34,6 @@ class _HomeMobileState extends State<HomeMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       
         title: Row(
           children: [
             Container(
@@ -52,7 +52,6 @@ class _HomeMobileState extends State<HomeMobile> {
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
-            
           ],
         ),
         actions: [
@@ -75,29 +74,56 @@ class _HomeMobileState extends State<HomeMobile> {
       drawer: Drawer(
         child: Column(
           children: [
-            const SizedBox(height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
             MyListTile(
                 title: "Ask for Blood",
                 imageIcon: "assets/blood-bag.png",
                 onTap: () {
-                  Navigator.push(context,MaterialPageRoute(builder: (context)=>AskForBloodMobile()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AskForBloodMobile()));
                 }),
-                const SizedBox(height: 20,),
-                MyListTile(
-                  title: "Donate Blood",
-                  imageIcon: "assets/arm.png",
-                  onTap: () {
-                     Navigator.push(context,MaterialPageRoute(builder: (context)=>const BloodViewMobile()));
-                  }
-                ),
-                  const SizedBox(height: 20,),
-                 MyListTile(
-                  title: "My Blood Requests",
-                  imageIcon: "assets/arm.png",
-                  onTap: () {
-                     Navigator.push(context,MaterialPageRoute(builder: (context)=>const MyBloodRequests()));
-                  }
-                ),
+            const SizedBox(
+              height: 20,
+            ),
+            MyListTile(
+                title: "Donate Blood",
+                imageIcon: "assets/arm.png",
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BloodViewMobile()));
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            MyListTile(
+                title: "My Blood Requests",
+                imageIcon: "assets/arm.png",
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyBloodRequests()));
+                }),
+            const SizedBox(
+              height: 30,
+            ),
+            MyListTile(
+              title: "LogOut",
+              imageIcon: "assets/check-out.png",
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginM()),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -209,10 +235,6 @@ class _HomeMobileState extends State<HomeMobile> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        MyTextt(
-                                            text: "Seller name",
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w400),
                                         MyTextt(
                                             text: "Product name",
                                             fontSize: 20,
