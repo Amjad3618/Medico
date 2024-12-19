@@ -55,6 +55,7 @@ class _OrderReceivingPageMobileState extends State<OrderReceivingPageMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Your Orders'),
       ),
       body: StreamBuilder<QuerySnapshot>(

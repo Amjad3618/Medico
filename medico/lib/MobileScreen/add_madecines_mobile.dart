@@ -162,6 +162,7 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          automaticallyImplyLeading: false,
         title: const MyTextt(text: "Add Medicine OR donate blood",fontSize: 30,color: Colors.black,),
         centerTitle: true,
       ),
@@ -260,26 +261,7 @@ class _AddMedicineMobileState extends State<AddMedicineMobile> {
                 TextFormField(
                   maxLines: 5, // Allows the field to expand as needed
                   controller: _descriptionController,
-                  onChanged: (value) {
-                    setState(() {
-                      // Calculate word count as the user types
-                      _currentWordCount = value.trim().split(RegExp(r'\s+')).length;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a description';
-                    }
-
-                    final wordCount = value.trim().split(RegExp(r'\s+')).length;
-
-                    if (wordCount < 300) {
-                      return 'Please enter at least 300 words';
-                    } else if (wordCount > 700) {
-                      return 'Please enter no more than 700 words';
-                    }
-                    return null;
-                  },
+                 
                   decoration: const InputDecoration(
                     hintText: "Description",
                     border: OutlineInputBorder(),

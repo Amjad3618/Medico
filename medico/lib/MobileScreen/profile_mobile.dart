@@ -237,6 +237,7 @@ class _ProfileMobileState extends State<ProfileMobile> {
 
     return Scaffold(
       appBar: AppBar(
+          automaticallyImplyLeading: false,
         title: const Text("Profile"),
         centerTitle: true,
         actions: [

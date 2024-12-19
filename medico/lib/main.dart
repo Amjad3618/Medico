@@ -1,27 +1,26 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:medico/utils/uiHelper.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  if (kIsWeb || defaultTargetPlatform == TargetPlatform.android) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyB9lM1XebxHtrcZQYvZRHfF1aSFsCj0ISk",
-        authDomain: "medico-533fd.firebaseapp.com",
-        databaseURL: "https://medico-533fd-default-rtdb.firebaseio.com",
-        projectId: "medico-533fd",
-        storageBucket: "medico-533fd.appspot.com",
-        messagingSenderId: "479462515526",
-        appId: "1:479462515526:web:530e58739f8f92d5c37b47"
-      ),
-    );
-  } else {
-    await Firebase.initializeApp();
-  }
-  
+  // if (kIsWeb || defaultTargetPlatform == TargetPlatform.android) {
+  //   await Firebase.initializeApp(
+  //     options: const FirebaseOptions(
+  //       apiKey: "AIzaSyB9lM1XebxHtrcZQYvZRHfF1aSFsCj0ISk",
+  //       authDomain: "medico-533fd.firebaseapp.com",
+  //       databaseURL: "https://medico-533fd-default-rtdb.firebaseio.com",
+  //       projectId: "medico-533fd",
+  //       storageBucket: "medico-533fd.appspot.com",
+  //       messagingSenderId: "479462515526",
+  //       appId: "1:479462515526:web:530e58739f8f92d5c37b47"
+  //     ),
+  //   );
+  // } else {
+  //   await Firebase.initializeApp();
+  // }
+   await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
